@@ -1,0 +1,18 @@
+:root { --app-bg: #f4f7fb; --ink: #172033; }
+body { background: var(--app-bg); color: var(--ink); min-height: 100vh; }
+.navbar-brand { letter-spacing: -.03em; }
+.auth-card { max-width: 470px; margin-top: 5vh; }
+.today-label { color: #536179; font-size: .95rem; font-weight: 600; }
+.stat-card { background: white; border-radius: 1rem; padding: 1rem 1.15rem; box-shadow: 0 2px 12px #14213d0a; height: 100%; }
+.stat-card span { color: #647189; display: block; font-size: .82rem; }
+.stat-card strong { display: block; margin-top: .25rem; font-size: 1.8rem; letter-spacing: -.04em; }
+.card { border-radius: 1rem; }
+.card-header { border-radius: 1rem 1rem 0 0 !important; }
+.employee-list { display: grid; gap: .65rem; }
+.employee-item { border: 1px solid #e8edf4; border-radius: .75rem; padding: .75rem .85rem; display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+.employee-name { font-weight: 650; }
+.employee-contact { font-size: .8rem; color: #68768d; }
+.employee-item .btn { flex-shrink: 0; }
+.table thead th { font-size: .76rem; text-transform: uppercase; letter-spacing: .03em; color: #738096; font-weight: 650; border-bottom-color: #e8edf4; }
+.table td { font-size: .9rem; }
+@media (max-width: 575.98px) { .auth-card { margin-top: 2vh; } .today-label { font-size: .86rem; } .employee-item { align-items: flex-start; } }

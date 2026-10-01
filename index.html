@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="pt-AO">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d6efd">
+  <title>Presença — Funcionários</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar navbar-dark bg-primary shadow-sm">
+    <div class="container-fluid px-3 px-lg-4">
+      <a class="navbar-brand fw-bold" href="#">Presença</a>
+      <div id="accountArea" class="d-none d-flex align-items-center gap-3 text-white">
+        <span id="userEmail" class="small d-none d-sm-inline"></span>
+        <span id="userRoleBadge" class="badge text-bg-light text-primary"></span>
+        <button id="logoutBtn" class="btn btn-sm btn-outline-light">Terminar sessão</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4 py-lg-5">
+    <section id="setupNotice" class="alert alert-warning d-none" role="alert">
+      <strong>Falta configurar o Supabase.</strong> Abre <code>app.js</code> e preenche <code>SUPABASE_URL</code> e <code>SUPABASE_ANON_KEY</code> com os dados do teu projeto.
+    </section>
+
+    <section id="authView" class="auth-card card border-0 shadow-sm mx-auto">
+      <div class="card-body p-4 p-md-5">
+        <h1 class="h3 fw-bold mb-2">Gestão de presenças</h1>
+        <p class="text-secondary mb-4">Entra com a tua conta para gerir funcionários e registos.</p>
+        <form id="authForm">
+          <label for="authEmail" class="form-label">E-mail</label>
+          <input id="authEmail" class="form-control mb-3" type="email" autocomplete="email" required>
+          <label for="authPassword" class="form-label">Palavra-passe</label>
+          <input id="authPassword" class="form-control mb-3" type="password" minlength="6" autocomplete="current-password" required>
+          <div id="authMessage" class="small mb-3" aria-live="polite"></div>
+          <div class="d-grid gap-2">
+            <button id="loginBtn" class="btn btn-primary" type="submit">Iniciar sessão</button>
+            <button id="signupBtn" class="btn btn-outline-primary" type="button">Criar conta de administrador</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="appView" class="d-none">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+        <div><h1 class="h2 fw-bold mb-1">Presenças</h1><p class="text-secondary mb-0">Regista entradas, saídas e consulta os relatórios.</p></div>
+        <div id="todayLabel" class="today-label"></div>
+      </div>
+
+      <div id="appMessage" class="alert d-none" role="status" aria-live="polite"></div>
+      <div id="unassignedNotice" class="alert alert-warning d-none" role="alert"></div>
+
+      <div class="row g-3 mb-4">
+        <div id="statEmployeeCard" class="col-6 col-lg-3"><div class="stat-card"><span>Funcionários ativos</span><strong id="activeCount">0</strong></div></div>
+        <div class="col-6 col-lg-3"><div class="stat-card"><span>Presentes agora</span><strong id="presentCount">0</strong></div></div>
+        <div class="col-6 col-lg-3"><div class="stat-card"><span>Entradas hoje</span><strong id="entriesToday">0</strong></div></div>
+        <div class="col-6 col-lg-3"><div class="stat-card"><span>Saídas hoje</span><strong id="exitsToday">0</strong></div></div>
+      </div>
+
+      <div class="row g-4">
+        <div id="employeeManagementColumn" class="col-12 col-xl-5">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 px-4 pt-4"><h2 class="h5 fw-bold mb-0">Funcionários</h2></div>
+            <div class="card-body px-4">
+              <form id="employeeForm" class="row g-2 mb-4">
+                <div class="col-12"><label for="employeeName" class="form-label small fw-semibold">Nome completo</label><input id="employeeName" class="form-control" maxlength="120" required placeholder="Ex.: Ana Manuel"></div>
+                <div class="col-12"><label for="employeeWhatsapp" class="form-label small fw-semibold">WhatsApp</label><input id="employeeWhatsapp" class="form-control" type="tel" maxlength="30" placeholder="Ex.: +244 923 000 000"></div>
+                <div class="col-12 d-grid mt-3"><button class="btn btn-primary" type="submit">Adicionar funcionário</button></div>
+              </form>
+              <div id="employeeList" class="employee-list"><div class="text-secondary small">A carregar...</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="attendanceColumn" class="col-12 col-xl-7">
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 px-4 pt-4"><h2 class="h5 fw-bold mb-0">Registar presença</h2></div>
+            <div id="attendanceControls" class="card-body px-4">
+              <div class="row g-2 align-items-end">
+                <div class="col-12 col-md-7"><label for="attendanceEmployee" class="form-label small fw-semibold">Funcionário</label><select id="attendanceEmployee" class="form-select"><option value="">Seleciona um funcionário</option></select></div>
+                <div class="col-6 col-md-2 d-grid"><button id="checkInBtn" class="btn btn-success" type="button">Entrada</button></div>
+                <div class="col-6 col-md-3 d-grid"><button id="checkOutBtn" class="btn btn-outline-danger" type="button">Saída</button></div>
+              </div>
+              <p class="small text-secondary mt-3 mb-0">A hora é registada automaticamente no fuso horário de Angola.</p>
+            </div>
+          </div>
+
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 px-4 pt-4 d-flex justify-content-between align-items-center gap-2 flex-wrap">
+              <h2 class="h5 fw-bold mb-0">Registos recentes</h2>
+              <button id="refreshBtn" class="btn btn-sm btn-outline-secondary" type="button">Atualizar</button>
+            </div>
+            <div class="table-responsive px-4 pb-3">
+              <table class="table align-middle mb-0">
+                <thead><tr><th>Funcionário</th><th>Entrada</th><th>Saída</th></tr></thead>
+                <tbody id="recentAttendance"><tr><td colspan="3" class="text-secondary py-4">A carregar...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="reportCard" class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-white border-0 px-4 pt-4"><h2 class="h5 fw-bold mb-0">Relatórios</h2><p class="text-secondary small mb-0 mt-1">Filtra por período e funcionário; exporta em CSV, compatível com Excel.</p></div>
+        <div class="card-body px-4">
+          <div class="row g-3 align-items-end">
+            <div class="col-6 col-lg-2"><label class="form-label small fw-semibold" for="reportFrom">De</label><input id="reportFrom" type="date" class="form-control"></div>
+            <div class="col-6 col-lg-2"><label class="form-label small fw-semibold" for="reportTo">Até</label><input id="reportTo" type="date" class="form-control"></div>
+            <div class="col-12 col-lg-4"><label class="form-label small fw-semibold" for="reportEmployee">Funcionário</label><select id="reportEmployee" class="form-select"><option value="">Todos os funcionários</option></select></div>
+            <div class="col-12 col-lg-4 d-grid"><button id="downloadReportBtn" class="btn btn-primary" type="button">Baixar relatório CSV</button></div>
+          </div>
+          <div id="reportSummary" class="small text-secondary mt-3" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div id="accessPanel" class="card border-0 shadow-sm mt-4 d-none">
+        <div class="card-header bg-white border-0 px-4 pt-4"><h2 class="h5 fw-bold mb-0">Contas e níveis de acesso</h2><p class="text-secondary small mb-0 mt-1">Define o perfil e, para funcionários, associa a conta ao respetivo cadastro.</p></div>
+        <div class="card-body px-4">
+          <div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Conta</th><th>Nível</th><th>Funcionário associado</th><th></th></tr></thead><tbody id="accessRows"><tr><td colspan="4" class="text-secondary py-3">A carregar...</td></tr></tbody></table></div>
+          <p class="small text-secondary mt-3 mb-0">Novas contas começam como Funcionário. Para dar acesso, a conta precisa estar registada e o funcionário cadastrado.</p>
+        </div>
+      </div>
+      <p class="small text-secondary text-center mt-4">Presença · Gestão simples da equipa</p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
